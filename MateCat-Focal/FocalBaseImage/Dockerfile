@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as matecat-focal-base-image
+FROM registry.cn-hangzhou.aliyuncs.com/acs/ubuntu:20.04 as matecat-focal-base-image
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -10,12 +10,12 @@ ENV HTTPS_PROXY=http://192.168.254.242:7890
 ENV no_proxy=localhost,127.0.0.1,::1
 ENV NO_PROXY=localhost,127.0.0.1,::1
 
-# 备份原始sources.list并配置清华tuna源
+# 备份原始sources.list并配置清华tuna源(使用HTTP避免证书问题)
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 RUN apt-get update
 

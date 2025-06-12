@@ -14,12 +14,12 @@ ENV PHPDIR="/etc/php/7.4"
 RUN export DEBIAN_FRONTEND=noninteractive
 RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime
 
-# 配置清华tuna源
+# 配置清华tuna源(使用HTTP避免证书问题)
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 RUN apt-get update
 RUN apt-get -y full-upgrade
@@ -27,10 +27,10 @@ RUN apt-get -y full-upgrade
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# 使用清华Node.js源
+# 使用清华Node.js源(使用HTTP避免证书问题)
 RUN mkdir -p /etc/apt/keyrings nodejs \
-    && curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/nodesource/gpgkey/nodesource.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && curl -fsSL http://mirrors.tuna.tsinghua.edu.cn/nodesource/gpgkey/nodesource.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] http://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
             php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd mysql-client libzip-dev \
