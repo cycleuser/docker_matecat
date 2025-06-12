@@ -27,12 +27,21 @@ RUN apt-get -y full-upgrade
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# 直接使用Ubuntu官方源安装Node.js
-RUN apt-get update \
-    && apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
-            php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd mysql-client libzip-dev \
-            certbot python3-certbot-apache redis-tools nodejs npm \
-    && echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# 配置APT重试和超时设置，分批安装软件包
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+    echo 'Acquire::http::Timeout "30";' >> /etc/apt/apt.conf.d/80-retries && \
+    echo 'Acquire::https::Timeout "30";' >> /etc/apt/apt.conf.d/80-retries
+
+# 分批安装，减少单次下载压力
+RUN apt-get update && apt-get -y install apache2 apache2-dev libapache2-mod-php
+
+RUN apt-get -y install php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd
+
+RUN apt-get -y install mysql-client libzip-dev certbot python3-certbot-apache redis-tools
+
+RUN apt-get -y install nodejs npm
+
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Prepare the environment
 ENV PHP_POST_MAX_SIZE 1024M

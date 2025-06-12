@@ -18,6 +18,11 @@ RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN ln -snvf /bin/true /sbin/initctl
 ENV DEBIAN_FRONTEND noninteractive
 
+# 配置APT重试和超时设置
+RUN echo 'Acquire::Retries "3";' > /etc/apt/apt.conf.d/80-retries && \
+    echo 'Acquire::http::Timeout "30";' >> /etc/apt/apt.conf.d/80-retries && \
+    echo 'Acquire::https::Timeout "30";' >> /etc/apt/apt.conf.d/80-retries
+
 # 配置清华tuna源(使用HTTP避免证书问题)
 RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
@@ -25,8 +30,13 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
-RUN apt-get update && apt-get -y full-upgrade && \
-    apt-get install -y software-properties-common openjdk-8-jre && \
+RUN apt-get update && apt-get -y full-upgrade
+
+# 分批安装软件包
+RUN apt-get install -y software-properties-common openjdk-8-jre
+
+# 下载ActiveMQ
+RUN \
     cd /tmp/ && \
     wget --no-check-certificate https://mirrors.tuna.tsinghua.edu.cn/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz || \
     wget --no-check-certificate https://mirrors.aliyun.com/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz || \
