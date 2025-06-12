@@ -27,13 +27,11 @@ RUN apt-get -y full-upgrade
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# 使用阿里云Node.js镜像源，跳过GPG验证
-RUN mkdir -p /etc/apt/keyrings nodejs \
-    && echo "deb [trusted=yes] https://mirrors.aliyun.com/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
-    && apt-get update \
+# 直接使用Ubuntu官方源安装Node.js
+RUN apt-get update \
     && apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
             php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd mysql-client libzip-dev \
-            certbot python3-certbot-apache redis-tools nodejs \
+            certbot python3-certbot-apache redis-tools nodejs npm \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Prepare the environment
