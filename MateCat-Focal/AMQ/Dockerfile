@@ -8,7 +8,7 @@ ENV HTTPS_PROXY=http://192.168.56.1:7890
 ENV no_proxy=localhost,127.0.0.1,::1
 ENV NO_PROXY=localhost,127.0.0.1,::1
 
-ARG AMQ_VERSION=5.15.10
+ARG AMQ_VERSION=5.19.0
 
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
@@ -29,7 +29,8 @@ RUN apt-get update && apt-get -y full-upgrade && \
     apt-get install -y software-properties-common openjdk-8-jre && \
     cd /tmp/ && \
     wget --no-check-certificate https://mirrors.tuna.tsinghua.edu.cn/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz || \
-    wget --no-check-certificate https://mirrors.aliyun.com/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz && \
+    wget --no-check-certificate https://mirrors.aliyun.com/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz || \
+    wget --no-check-certificate https://archive.apache.org/dist/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz && \
     tar xzf apache-activemq-${AMQ_VERSION}-bin.tar.gz && rm apache-activemq-${AMQ_VERSION}-bin.tar.gz && \
     mv apache-activemq-${AMQ_VERSION} /opt && \
     ln -sf /opt/apache-activemq-${AMQ_VERSION}/ /opt/activemq && \
