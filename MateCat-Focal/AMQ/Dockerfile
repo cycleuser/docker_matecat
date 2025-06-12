@@ -27,11 +27,14 @@ RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN ln -snvf /bin/true /sbin/initctl
 ENV DEBIAN_FRONTEND noninteractive
 
-# 直接强制写入TUNA源
-RUN echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble main restricted universe multiverse" > /etc/apt/sources.list && \
+# 立即强制替换sources.list为TUNA源，绝对不能使用默认源
+RUN rm -f /etc/apt/sources.list && \
+    echo "# TUNA Mirror Sources - FORCED" > /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "AMQ强制验证TUNA源:" && cat /etc/apt/sources.list
 
 # 配置apt重试和超时设置
 RUN echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/80-retries && \

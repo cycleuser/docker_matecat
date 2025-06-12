@@ -1,13 +1,13 @@
 FROM ubuntu:24.04 as matecat-focal-base-image
 
-# 立即替换sources.list为TUNA源，不能让apt使用默认源
-RUN cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
-    echo "# TUNA Mirror Sources - Forced Override" > /etc/apt/sources.list && \
+# 立即强制替换sources.list为TUNA源，绝对不能使用默认源
+RUN rm -f /etc/apt/sources.list && \
+    echo "# TUNA Mirror Sources - FORCED" > /etc/apt/sources.list && \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "验证sources.list内容:" && cat /etc/apt/sources.list
+    echo "强制验证TUNA源:" && cat /etc/apt/sources.list
 
 # 接收构建参数中的代理配置
 ARG http_proxy
@@ -34,8 +34,8 @@ RUN echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/80-retries && \
     echo 'Acquire::https::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries && \
     echo 'Acquire::ftp::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries
 
-# 更新包列表（应该从TUNA源）
-RUN echo "开始apt-get update，应该从TUNA源下载..." && apt-get update
+# 更新包列表（必须从TUNA源）
+RUN echo "开始apt-get update，强制从TUNA源下载..." && apt-get update
 
 # 安装基础包
 RUN apt-get -y --fix-missing install apt-utils ssh-client vim locate iputils-ping monit git curl wget net-tools tree software-properties-common locales \
