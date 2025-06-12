@@ -36,7 +36,11 @@ if [[ -z "${MATECAT_EXISTS}" && "${_type_}" == "master" ]]; then
   done
 
   # MySql MateCat
-  git clone https://github.com/matecat/MateCat.git /tmp/matecat
+  # 使用gitee镜像替代github
+git clone https://gitee.com/mirrors/matecat.git /tmp/matecat || \
+git clone https://github.com.cnpmjs.org/matecat/MateCat.git /tmp/matecat || \
+git clone https://hub.fastgit.xyz/matecat/MateCat.git /tmp/matecat || \
+git clone https://github.com/matecat/MateCat.git /tmp/matecat
 
   # Creating schema and fill some data
   echo "Executing: /usr/bin/mysql </tmp/matecat/lib/Model/matecat.sql"

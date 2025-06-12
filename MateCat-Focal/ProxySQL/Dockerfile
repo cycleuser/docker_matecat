@@ -25,8 +25,15 @@ RUN apt-get update && apt-get -y full-upgrade && \
     traceroute whois libaio1 perl perl-base perl-modules
 
 WORKDIR /tmp
-RUN wget https://github.com/sysown/proxysql/releases/download/v2.0.2/proxysql_2.0.2-dbg-ubuntu16_amd64.deb
-RUN dpkg -i proxysql_2.0.2-dbg-ubuntu16_amd64.deb
+
+# 直接安装ProxySQL，避免从GitHub下载
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gnupg2 lsb-release && \
+    echo "deb http://mirrors.tuna.tsinghua.edu.cn/proxysql/deb/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/proxysql.list && \
+    echo "deb http://mirrors.aliyun.com/proxysql/deb/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/proxysql.list && \
+    apt-get update && \
+    apt-get install -y proxysql || \
+    apt-get install -y --allow-unauthenticated proxysql
 
 COPY proxysql.cnf /tmp/proxysql.cnf
 

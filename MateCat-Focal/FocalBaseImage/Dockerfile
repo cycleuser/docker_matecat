@@ -19,6 +19,9 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 
 RUN apt-get update
 
+# 安装ca-certificates以解决SSL证书问题
+RUN apt-get -y --fix-missing install ca-certificates
+
 RUN apt-get -y --fix-missing install apt-utils ssh-client vim locate iputils-ping monit git curl wget net-tools tree software-properties-common locales \
     psmisc screen dstat \
     traceroute whois libaio1 perl perl-base perl-modules

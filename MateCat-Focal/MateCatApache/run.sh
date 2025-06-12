@@ -39,6 +39,9 @@ fi
 # debug, configuration
 cat ./inc/config.ini
 
+# 使用阿里云镜像下载composer
+php -r "readfile('https://mirrors.aliyun.com/composer/composer.phar');" > composer.phar || \
+php -r "readfile('https://mirrors.cloud.tencent.com/composer/composer.phar');" > composer.phar || \
 php -r "readfile('https://getcomposer.org/installer');" | php
 php "${MATECAT_HOME}"/composer.phar install
 
