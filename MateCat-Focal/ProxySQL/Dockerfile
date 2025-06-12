@@ -34,7 +34,7 @@ RUN echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/80-retries && \
 RUN apt-get update && apt-get -y full-upgrade && \
     apt -y install vim locate iputils-ping curl wget net-tools \
     mysql-client psmisc screen dstat \
-    traceroute whois libaio1 perl perl-base perl-modules
+    traceroute whois libaio1t64 perl perl-base perl-modules-5.38
 
 WORKDIR /tmp
 RUN wget --timeout=300 --tries=3 https://github.com/sysown/proxysql/releases/download/v2.0.2/proxysql_2.0.2-dbg-ubuntu16_amd64.deb
