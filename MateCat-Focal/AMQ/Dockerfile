@@ -25,10 +25,8 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
-RUN apt-get update && apt-get -y full-upgrade && apt-get install -y software-properties-common && \
-    add-apt-repository -y ppa:openjdk-r/ppa && \
-    apt-get update && \
-    apt-get install -y  openjdk-8-jre && \
+RUN apt-get update && apt-get -y full-upgrade && \
+    apt-get install -y software-properties-common openjdk-8-jre && \
     cd /tmp/ && \
     wget --no-check-certificate https://mirrors.tuna.tsinghua.edu.cn/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz || \
     wget --no-check-certificate https://mirrors.aliyun.com/apache/activemq/${AMQ_VERSION}/apache-activemq-${AMQ_VERSION}-bin.tar.gz && \

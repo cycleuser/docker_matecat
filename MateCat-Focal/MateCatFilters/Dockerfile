@@ -19,10 +19,7 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
     echo "deb http://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get -y full-upgrade && \
-    apt-get install -y git software-properties-common && \
-    add-apt-repository -y ppa:openjdk-r/ppa && \
-    apt-get update && \
-    apt-get install -y openjdk-8-jre
+    apt-get install -y git software-properties-common openjdk-8-jre
 
 COPY data /
 
