@@ -34,7 +34,7 @@ RUN echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/80-retries && \
 WORKDIR /tmp
 
 RUN apt-get update
-RUN apt-get install -y libev4 libcurl4-openssl-dev libdbd-mysql-perl rsync gnupg
+RUN apt-get install -y libev-dev libcurl4-openssl-dev libdbd-mysql-perl rsync gnupg
 RUN wget --timeout=300 --tries=3 https://repo.percona.com/apt/percona-release_latest.$(lsb_release -sc)_all.deb && dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
 RUN apt-get update
 RUN percona-release enable-only ps-57 && apt-get install -y percona-server-server-5.7
