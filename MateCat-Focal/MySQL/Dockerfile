@@ -23,9 +23,15 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 
 RUN apt-get update
 RUN apt-get install -y libev4 libcurl4-openssl-dev libdbd-mysql-perl rsync gnupg2
-RUN wget http://mirrors.tuna.tsinghua.edu.cn/percona/apt/percona-release_latest.$(lsb_release -sc)_all.deb && dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
-RUN apt-get update
-RUN percona-release enable-only ps-57 && apt-get install -y percona-server-server-5.7
+
+# 使用MySQL官方包而不是Percona，避免源的问题
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-8.0 mysql-client-8.0
+
+# 或者如果需要使用Percona，配置清华源
+# RUN wget http://mirrors.tuna.tsinghua.edu.cn/percona/apt/percona-release_latest.$(lsb_release -sc)_all.deb && dpkg -i percona-release_latest.$(lsb_release -sc)_all.deb
+# RUN sed -i 's|repo.percona.com|mirrors.tuna.tsinghua.edu.cn/percona|g' /etc/apt/sources.list.d/percona-*.list
+# RUN apt-get update
+# RUN percona-release enable-only ps-57 && apt-get install -y percona-server-server-5.7
 RUN apt-get -y full-upgrade
 
 #RUN wget https://www.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.15/binary/debian/bionic/x86_64/percona-xtrabackup-24_2.4.15-1.bionic_amd64.deb
