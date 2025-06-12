@@ -8,10 +8,10 @@ services:
     image: ostico/matecat-focal-base-image
     build: ./FocalBaseImage
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -23,10 +23,10 @@ services:
     networks:
        - matecat-network
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -38,10 +38,10 @@ services:
     networks:
        - matecat-network
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -57,10 +57,10 @@ services:
         aliases:
           - amq
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -80,10 +80,10 @@ services:
         aliases:
           - mysql-master
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -105,10 +105,10 @@ services:
         aliases:
           - mysql-slave
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -128,10 +128,10 @@ services:
       - mysql-master
       - mysql-slave
     environment:
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 
@@ -143,10 +143,10 @@ services:
       - ASPNETCORE_URLS=http://+:3000
       - SERVEROPTIONS__URLS=http://+:3000
       - ASPNETCORE_HTTP_PORTS=3000
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
     ports:
@@ -168,10 +168,10 @@ services:
       - XDEBUG_CONFIG=172.31.0.1
       - FILTERS_ADDRESS=http://filters:8732/
       - PHP_IDE_CONFIG=serverName=dev.matecat.com
-      - http_proxy=http://192.168.254.242:7890
-      - https_proxy=http://192.168.254.242:7890
-      - HTTP_PROXY=http://192.168.254.242:7890
-      - HTTPS_PROXY=http://192.168.254.242:7890
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
       - no_proxy=localhost,127.0.0.1,::1
       - NO_PROXY=localhost,127.0.0.1,::1
 #      SMTP_HOST: localhost

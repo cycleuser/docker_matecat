@@ -1,10 +1,10 @@
 FROM ostico/matecat-focal-base-image:latest
 
 # 设置代理
-ENV http_proxy=http://192.168.254.242:7890
-ENV https_proxy=http://192.168.254.242:7890
-ENV HTTP_PROXY=http://192.168.254.242:7890
-ENV HTTPS_PROXY=http://192.168.254.242:7890
+ENV http_proxy=http://192.168.56.1:7890
+ENV https_proxy=http://192.168.56.1:7890
+ENV HTTP_PROXY=http://192.168.56.1:7890
+ENV HTTPS_PROXY=http://192.168.56.1:7890
 ENV no_proxy=localhost,127.0.0.1,::1
 ENV NO_PROXY=localhost,127.0.0.1,::1
 
