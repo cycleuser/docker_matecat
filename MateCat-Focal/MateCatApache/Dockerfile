@@ -27,10 +27,10 @@ RUN apt-get -y full-upgrade
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# 使用清华Node.js源(使用HTTP避免证书问题)
+# 使用Node.js官方GPG密钥和阿里云镜像源
 RUN mkdir -p /etc/apt/keyrings nodejs \
-    && curl -fsSL http://mirrors.tuna.tsinghua.edu.cn/nodesource/gpgkey/nodesource.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] http://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://mirrors.aliyun.com/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
     && apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
             php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd mysql-client libzip-dev \
