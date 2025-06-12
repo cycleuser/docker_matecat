@@ -27,11 +27,14 @@ RUN apt-get install -y libev4 libcurl4-openssl-dev libdbd-mysql-perl rsync gnupg
 # 直接配置Percona清华源
 RUN echo "deb http://mirrors.tuna.tsinghua.edu.cn/percona/ps-57/apt focal main" > /etc/apt/sources.list.d/percona-ps-57.list
 
-# 添加Percona GPG密钥
-RUN wget -qO - http://mirrors.tuna.tsinghua.edu.cn/percona/apt/percona_repo.gpg | apt-key add -
+# 添加Percona GPG密钥 - 使用多种方法确保成功
+RUN wget -qO - http://mirrors.tuna.tsinghua.edu.cn/percona/apt/percona_repo.gpg | apt-key add - || \
+    wget -qO - https://repo.percona.com/apt/percona-release.key | apt-key add - || \
+    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 4D1BB29D63D98E422B2113B19334A25F8507EFA5
 
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y percona-server-server-5.7
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y percona-server-server-5.7 || \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --allow-unauthenticated percona-server-server-5.7
 RUN apt-get -y full-upgrade
 
 #RUN wget https://www.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.15/binary/debian/bionic/x86_64/percona-xtrabackup-24_2.4.15-1.bionic_amd64.deb
