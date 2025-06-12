@@ -1,56 +1,31 @@
 FROM ostico/matecat-focal-base-image:latest
 
-# 接收构建参数中的代理配置
-ARG http_proxy
-ARG https_proxy
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
-ARG no_proxy
-ARG NO_PROXY
-ARG APT_MIRROR=mirrors.tuna.tsinghua.edu.cn
-
-# 设置环境变量以便在容器构建过程中使用代理
-ENV http_proxy=${http_proxy}
-ENV https_proxy=${https_proxy}
-ENV HTTP_PROXY=${HTTP_PROXY}
-ENV HTTPS_PROXY=${HTTPS_PROXY}
-ENV no_proxy=${no_proxy}
-ENV NO_PROXY=${NO_PROXY}
+# 设置代理
+ENV http_proxy=http://192.168.254.242:7890
+ENV https_proxy=http://192.168.254.242:7890
+ENV HTTP_PROXY=http://192.168.254.242:7890
+ENV HTTPS_PROXY=http://192.168.254.242:7890
+ENV no_proxy=localhost,127.0.0.1,::1
+ENV NO_PROXY=localhost,127.0.0.1,::1
 
 RUN dpkg-divert --local --rename --add /sbin/initctl
 RUN ln -snvf /bin/true /sbin/initctl
 RUN export DEBIAN_FRONTEND=noninteractive
 
-# 立即强制替换所有Ubuntu源为TUNA源，绝对不允许任何ubuntu.com
-RUN rm -f /etc/apt/sources.list && \
-    rm -rf /etc/apt/sources.list.d/* && \
-    echo "# TUNA Mirror Sources - FORCED" > /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "ProxySQL强制验证TUNA源:" && cat /etc/apt/sources.list && \
-    find /etc/apt -name "*.list" -exec sed -i 's|http://.*archive.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|http://.*security.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|http://.*ports.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|https://.*archive.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|https://.*security.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|https://.*ports.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    echo "ProxySQL所有源文件检查完成"
-
-# 配置apt重试和超时设置
-RUN echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::http::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::https::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::ftp::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries
+# 配置清华tuna源
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 RUN apt-get update && apt-get -y full-upgrade && \
     apt -y install vim locate iputils-ping curl wget net-tools \
     mysql-client psmisc screen dstat \
-    traceroute whois libaio1t64 perl perl-base perl-modules-5.38
+    traceroute whois libaio1 perl perl-base perl-modules
 
 WORKDIR /tmp
-RUN wget --timeout=300 --tries=3 https://github.com/sysown/proxysql/releases/download/v2.0.2/proxysql_2.0.2-dbg-ubuntu16_amd64.deb
+RUN wget https://github.com/sysown/proxysql/releases/download/v2.0.2/proxysql_2.0.2-dbg-ubuntu16_amd64.deb
 RUN dpkg -i proxysql_2.0.2-dbg-ubuntu16_amd64.deb
 
 COPY proxysql.cnf /tmp/proxysql.cnf

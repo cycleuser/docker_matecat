@@ -1,21 +1,12 @@
 FROM ostico/matecat-focal-base-image:latest
 
-# 接收构建参数中的代理配置
-ARG http_proxy
-ARG https_proxy
-ARG HTTP_PROXY
-ARG HTTPS_PROXY
-ARG no_proxy
-ARG NO_PROXY
-ARG APT_MIRROR=mirrors.tuna.tsinghua.edu.cn
-
-# 设置环境变量以便在容器构建过程中使用代理
-ENV http_proxy=${http_proxy}
-ENV https_proxy=${https_proxy}
-ENV HTTP_PROXY=${HTTP_PROXY}
-ENV HTTPS_PROXY=${HTTPS_PROXY}
-ENV no_proxy=${no_proxy}
-ENV NO_PROXY=${NO_PROXY}
+# 设置代理
+ENV http_proxy=http://192.168.254.242:7890
+ENV https_proxy=http://192.168.254.242:7890
+ENV HTTP_PROXY=http://192.168.254.242:7890
+ENV HTTPS_PROXY=http://192.168.254.242:7890
+ENV no_proxy=localhost,127.0.0.1,::1
+ENV NO_PROXY=localhost,127.0.0.1,::1
 
 ENV NODE_RELEASE="20"
 ENV PHPDIR="/etc/php/7.4"
@@ -23,28 +14,12 @@ ENV PHPDIR="/etc/php/7.4"
 RUN export DEBIAN_FRONTEND=noninteractive
 RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime
 
-# 立即强制替换所有Ubuntu源为TUNA源，绝对不允许任何ubuntu.com
-RUN rm -f /etc/apt/sources.list && \
-    rm -rf /etc/apt/sources.list.d/* && \
-    echo "# TUNA Mirror Sources - FORCED" > /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ noble-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "Apache强制验证TUNA源:" && cat /etc/apt/sources.list && \
-    find /etc/apt -name "*.list" -exec sed -i 's|http://.*archive.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|http://.*security.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|http://.*ports.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|https://.*archive.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|https://.*security.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    find /etc/apt -name "*.list" -exec sed -i 's|https://.*ports.ubuntu.com|https://mirrors.tuna.tsinghua.edu.cn|g' {} \; && \
-    echo "Apache所有源文件检查完成"
-
-# 配置apt重试和超时设置
-RUN echo 'Acquire::Retries "3";' >> /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::http::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::https::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries && \
-    echo 'Acquire::ftp::Timeout "300";' >> /etc/apt/apt.conf.d/80-retries
+# 配置清华tuna源
+RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse" > /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse" >> /etc/apt/sources.list && \
+    echo "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-security main restricted universe multiverse" >> /etc/apt/sources.list
 
 RUN apt-get update
 RUN apt-get -y full-upgrade
@@ -52,17 +27,14 @@ RUN apt-get -y full-upgrade
 RUN locale-gen en_US.UTF-8
 ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-# 使用TUNA镜像的Node.js源
+# 使用清华Node.js源
 RUN mkdir -p /etc/apt/keyrings nodejs \
-    && curl --timeout 300 --retry 3 -fsSL https://${APT_MIRROR}/nodesource/gpgkey/nodesource.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
-    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://${APT_MIRROR}/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
+    && curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/nodesource/gpgkey/nodesource.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://mirrors.tuna.tsinghua.edu.cn/nodesource/deb_${NODE_RELEASE}.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list \
     && apt-get update \
-    && (apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
+    && apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
             php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd mysql-client libzip-dev \
-            certbot python3-certbot-apache redis-tools nodejs || \
-        apt-get -y --fix-missing install apache2 apache2-dev libapache2-mod-php \
-            php php-xdebug php-json php-xml php-curl php-mysql php-mbstring php-dev php-redis php-zip php-gd mysql-client libzip-dev \
-            certbot python3-certbot-apache redis-tools nodejs) \
+            certbot python3-certbot-apache redis-tools nodejs \
     && echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
 # Prepare the environment

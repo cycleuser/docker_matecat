@@ -6,33 +6,29 @@ services:
 
   base:
     image: ostico/matecat-focal-base-image
-    build:
-      context: ./FocalBaseImage
-      args:
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
+    build: ./FocalBaseImage
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   filters:
-    build:
-      context: ./MateCatFilters/
-      args:
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
+    build: ./MateCatFilters/
     container_name: matecat-filter
     ports:
       - "8732:8732"
     networks:
        - matecat-network
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   redis:
     image: redis
@@ -41,18 +37,16 @@ services:
       - "6379:6379"
     networks:
        - matecat-network
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   amq:
-    build:
-      context: ./AMQ/
-      args:
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
+    build: ./AMQ/
     container_name: matecat-amq
     ports:
       - "61613:61613"
@@ -62,66 +56,64 @@ services:
       matecat-network:
         aliases:
           - amq
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   mysql-master:
     build:
       context: ./MySQL/
       args:
         _type_: "master"
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-mysql-master
     ports:
      - "3307:3306"
     volumes:
       - /home/hashashiyyin/PhpstormProjects/temporary_docker_mount_volume:/mnt/external_volume:rw
-      - /home/hadoop/MateCat-db-master-data:/var/lib/mysql:rw
+      - /home/hashashiyyin/PhpstormProjects/matecat-db-master-data:/var/lib/mysql:rw
     networks:
       matecat-network:
         aliases:
           - mysql-master
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   mysql-slave:
     build:
       context: ./MySQL/
       args:
         _type_: "slave"
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-mysql-slave
     ports:
      - "3308:3306"
     volumes:
       - /home/hashashiyyin/PhpstormProjects/temporary_docker_mount_volume:/mnt/external_volume:rw
-      - /home/hadoop/MateCat-db-slave-data:/var/lib/mysql:rw
+      - /home/hashashiyyin/PhpstormProjects/matecat-db-slave-data:/var/lib/mysql:rw
     depends_on:
       - mysql-master
     networks:
       matecat-network:
         aliases:
           - mysql-slave
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   proxysql:
-    build:
-      context: ./ProxySQL/
-      args:
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
+    build: ./ProxySQL/
     container_name: matecat-proxysql
     ports:
       - "3306:3306"
@@ -135,6 +127,13 @@ services:
     depends_on:
       - mysql-master
       - mysql-slave
+    environment:
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 
   smtp4dev:
     image: rnwood/smtp4dev
@@ -144,6 +143,12 @@ services:
       - ASPNETCORE_URLS=http://+:3000
       - SERVEROPTIONS__URLS=http://+:3000
       - ASPNETCORE_HTTP_PORTS=3000
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
     ports:
       - "3000:3000"
     logging:
@@ -156,29 +161,26 @@ services:
       - matecat-network
 
   matecat:
-    build:
-      context: ./MateCatApache/
-      args:
-        http_proxy: http://192.168.254.242:7890
-        https_proxy: http://192.168.254.242:7890
-        HTTP_PROXY: http://192.168.254.242:7890
-        HTTPS_PROXY: http://192.168.254.242:7890
-        no_proxy: localhost,127.0.0.1,::1
-        NO_PROXY: localhost,127.0.0.1,::1
-        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
+    build: ./MateCatApache/
     container_name: matecat
     ## Remove this environment block if you don't need it ##
     environment:
-      XDEBUG_CONFIG: 172.31.0.1
-      FILTERS_ADDRESS: http://filters:8732/
-      PHP_IDE_CONFIG: serverName=dev.matecat.com
+      - XDEBUG_CONFIG=172.31.0.1
+      - FILTERS_ADDRESS=http://filters:8732/
+      - PHP_IDE_CONFIG=serverName=dev.matecat.com
+      - http_proxy=http://192.168.254.242:7890
+      - https_proxy=http://192.168.254.242:7890
+      - HTTP_PROXY=http://192.168.254.242:7890
+      - HTTPS_PROXY=http://192.168.254.242:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
 #      SMTP_HOST: localhost
 #      SMTP_PORT: 2637
     ## Remove this environment block if you don't need it ##
 
     volumes:
-      - /home/hadoop/MateCat/certs/letsencrypt:/etc/letsencrypt:rw
-      - /home/hadoop/MateCat:/var/www/matecat:rw
+      - /home/hashashiyyin/PhpstormProjects/matecat/certs/letsencrypt:/etc/letsencrypt:rw
+      - /home/hashashiyyin/PhpstormProjects/matecat:/var/www/matecat:rw
     ports:
       - "80:80"
       - "443:443"
