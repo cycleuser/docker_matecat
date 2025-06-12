@@ -6,10 +6,28 @@ services:
 
   base:
     image: ostico/matecat-focal-base-image
-    build: ./FocalBaseImage
+    build:
+      context: ./FocalBaseImage
+      args:
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
 
   filters:
-    build: ./MateCatFilters/
+    build:
+      context: ./MateCatFilters/
+      args:
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-filter
     ports:
       - "8732:8732"
@@ -25,7 +43,16 @@ services:
        - matecat-network
 
   amq:
-    build: ./AMQ/
+    build:
+      context: ./AMQ/
+      args:
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-amq
     ports:
       - "61613:61613"
@@ -41,6 +68,13 @@ services:
       context: ./MySQL/
       args:
         _type_: "master"
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-mysql-master
     ports:
      - "3307:3306"
@@ -57,6 +91,13 @@ services:
       context: ./MySQL/
       args:
         _type_: "slave"
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-mysql-slave
     ports:
      - "3308:3306"
@@ -71,7 +112,16 @@ services:
           - mysql-slave
 
   proxysql:
-    build: ./ProxySQL/
+    build:
+      context: ./ProxySQL/
+      args:
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat-proxysql
     ports:
       - "3306:3306"
@@ -106,7 +156,16 @@ services:
       - matecat-network
 
   matecat:
-    build: ./MateCatApache/
+    build:
+      context: ./MateCatApache/
+      args:
+        http_proxy: http://192.168.254.242:7890
+        https_proxy: http://192.168.254.242:7890
+        HTTP_PROXY: http://192.168.254.242:7890
+        HTTPS_PROXY: http://192.168.254.242:7890
+        no_proxy: localhost,127.0.0.1,::1
+        NO_PROXY: localhost,127.0.0.1,::1
+        APT_MIRROR: mirrors.tuna.tsinghua.edu.cn
     container_name: matecat
     ## Remove this environment block if you don't need it ##
     environment:
