@@ -26,14 +26,13 @@ RUN apt-get update && apt-get -y full-upgrade && \
 
 WORKDIR /tmp
 
-# 直接安装ProxySQL，避免从GitHub下载
+# Install ProxySQL from official repository
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends gnupg2 lsb-release && \
-    echo "deb http://mirrors.tuna.tsinghua.edu.cn/proxysql/deb/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/proxysql.list && \
-    echo "deb http://mirrors.aliyun.com/proxysql/deb/ $(lsb_release -sc) main" >> /etc/apt/sources.list.d/proxysql.list && \
+    apt-get install -y --no-install-recommends gnupg2 lsb-release wget && \
+    wget -O - 'https://repo.proxysql.com/ProxySQL/repo_pub_key' | apt-key add - && \
+    echo deb http://repo.proxysql.com/ProxySQL/proxysql-2.5.x/$(lsb_release -sc)/ ./ > /etc/apt/sources.list.d/proxysql.list && \
     apt-get update && \
-    apt-get install -y proxysql || \
-    apt-get install -y --allow-unauthenticated proxysql
+    apt-get install -y proxysql
 
 COPY proxysql.cnf /tmp/proxysql.cnf
 
