@@ -40,7 +40,7 @@ RUN echo "开始apt-get update，应该从TUNA源下载..." && apt-get update
 # 安装基础包
 RUN apt-get -y --fix-missing install apt-utils ssh-client vim locate iputils-ping monit git curl wget net-tools tree software-properties-common locales \
     psmisc screen dstat \
-    traceroute whois libaio1 perl perl-base perl-modules
+    traceroute whois libaio1t64 perl perl-base perl-modules-5.38
 
 # 升级系统
 RUN apt-get -y full-upgrade
