@@ -27,7 +27,7 @@ RUN cp /etc/apt/sources.list /etc/apt/sources.list.backup && \
 RUN apt-get update && apt-get -y full-upgrade
 
 # 分批安装基础软件包
-RUN apt-get install -y vim locate iputils-ping curl wget net-tools mysql-client
+RUN apt-get install -y vim locate iputils-ping curl wget net-tools mysql-client netcat-openbsd dnsutils
 
 RUN apt-get install -y psmisc screen dstat traceroute whois libaio1 perl perl-base perl-modules
 

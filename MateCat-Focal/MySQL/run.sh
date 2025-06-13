@@ -32,20 +32,46 @@ echo "=> Starting MySQL service..."
 echo "Executing: mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --log-error=/var/log/mysql/error.log --open-files-limit=65535 --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/run/mysqld/mysqld.sock --port=3306"
 
 # 启动MySQL服务
+echo "=> Starting MySQL service with service command..."
 service mysql start
+MYSQL_START_RESULT=$?
+echo "=> MySQL service start result: $MYSQL_START_RESULT"
+
+# 检查MySQL进程
+echo "=> Checking MySQL processes..."
+ps aux | grep mysql || echo "=> No MySQL processes found"
+
+# 检查MySQL服务状态
+echo "=> Checking MySQL service status..."
+service mysql status || echo "=> MySQL service status check failed"
 
 # 等待MySQL服务启动
 echo "=> Waiting for MySQL to start..."
-for i in {30..0}; do
+for i in {60..0}; do
     if mysql -e 'SELECT 1' &> /dev/null; then
+        echo "=> MySQL connection test successful"
         break
     fi
-    echo "=> MySQL is starting... ($i seconds remaining)"
+    if [ $((i % 10)) -eq 0 ]; then
+        echo "=> MySQL is starting... ($i seconds remaining)"
+        # 检查socket文件是否存在
+        if [ -S "/var/run/mysqld/mysqld.sock" ]; then
+            echo "=> Socket file exists"
+        else
+            echo "=> Socket file does not exist"
+        fi
+        # 检查MySQL进程
+        ps aux | grep mysqld | grep -v grep || echo "=> No mysqld process found"
+    fi
     sleep 1
 done
 
 if [ "$i" = 0 ]; then
-    echo "=> MySQL failed to start"
+    echo "=> MySQL failed to start within 60 seconds"
+    echo "=> Checking MySQL error log..."
+    tail -20 /var/log/mysql/error.log || echo "=> No error log found"
+    echo "=> Checking system logs..."
+    tail -10 /var/log/syslog || echo "=> No syslog found"
     exit 1
 fi
 

@@ -1,0 +1,66 @@
+networks:
+  matecat-network:
+    driver: bridge
+
+services:
+  mysql-master:
+    build:
+      context: ./MySQL/
+      args:
+        _type_: "master"
+    container_name: matecat-mysql-master
+    ports:
+     - "3307:3306"
+    networks:
+      matecat-network:
+        aliases:
+          - mysql-master
+    environment:
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
+
+  mysql-slave:
+    build:
+      context: ./MySQL/
+      args:
+        _type_: "slave"
+    container_name: matecat-mysql-slave
+    ports:
+     - "3308:3306"
+    depends_on:
+      - mysql-master
+    networks:
+      matecat-network:
+        aliases:
+          - mysql-slave
+    environment:
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1
+
+  proxysql:
+    build: ./ProxySQL/
+    container_name: matecat-proxysql
+    ports:
+      - "3306:3306"
+    networks:
+      matecat-network:
+        aliases:
+          - proxysql
+    depends_on:
+      - mysql-master
+      - mysql-slave
+    environment:
+      - http_proxy=http://192.168.56.1:7890
+      - https_proxy=http://192.168.56.1:7890
+      - HTTP_PROXY=http://192.168.56.1:7890
+      - HTTPS_PROXY=http://192.168.56.1:7890
+      - no_proxy=localhost,127.0.0.1,::1
+      - NO_PROXY=localhost,127.0.0.1,::1 
