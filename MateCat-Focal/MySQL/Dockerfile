@@ -38,14 +38,26 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server mysql-client
 # RUN DEBIAN_FRONTEND=noninteractive apt-get install -y mysql-server-5.7 mysql-client-5.7
 RUN apt-get -y full-upgrade
 
+# 停止MySQL服务（如果正在运行）并清理
+RUN service mysql stop || true && \
+    rm -rf /var/lib/mysql/* && \
+    rm -rf /var/run/mysqld/* && \
+    rm -rf /var/log/mysql/*
+
 #RUN wget https://www.percona.com/downloads/Percona-XtraBackup-2.4/Percona-XtraBackup-2.4.15/binary/debian/bionic/x86_64/percona-xtrabackup-24_2.4.15-1.bionic_amd64.deb
 #RUN dpkg -i percona-xtrabackup-24_2.4.15-1.bionic_amd64.deb
 
 COPY run.sh /tmp/run.sh
 RUN chmod +x /tmp/run.sh
 
-RUN mkdir -p /var/lib/mysql-files/binlog
-RUN chown -R mysql:mysql /var/lib/mysql-files/binlog
+# 创建必要的目录并设置权限
+RUN mkdir -p /var/lib/mysql-files/binlog && \
+    mkdir -p /var/run/mysqld && \
+    mkdir -p /var/log/mysql && \
+    chown -R mysql:mysql /var/lib/mysql && \
+    chown -R mysql:mysql /var/lib/mysql-files && \
+    chown -R mysql:mysql /var/run/mysqld && \
+    chown -R mysql:mysql /var/log/mysql
 
 ARG _type_
 ENV _type_=$_type_

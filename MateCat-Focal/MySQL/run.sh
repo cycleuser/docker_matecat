@@ -1,10 +1,55 @@
 #!/bin/bash
 
-chown mysql:mysql /var/lib/mysql/
+# 设置代理
+export http_proxy=http://192.168.56.1:7890
+export https_proxy=http://192.168.56.1:7890
+export HTTP_PROXY=http://192.168.56.1:7890
+export HTTPS_PROXY=http://192.168.56.1:7890
+export no_proxy=localhost,127.0.0.1,::1
+export NO_PROXY=localhost,127.0.0.1,::1
+
+# 创建必要的目录
+mkdir -p /var/run/mysqld
+mkdir -p /var/log/mysql
+mkdir -p /var/lib/mysql-files/binlog
+
+# 设置正确的权限
+chown -R mysql:mysql /var/lib/mysql/
+chown -R mysql:mysql /var/run/mysqld/
+chown -R mysql:mysql /var/log/mysql/
+chown -R mysql:mysql /var/lib/mysql-files/
+
+# 清理旧的pid文件
 rm -rf /var/run/mysqld/mysqld.pid 2>/dev/null
 
+# 检查数据库是否已初始化
+if [ ! -d "/var/lib/mysql/mysql" ]; then
+    echo "=> Initializing MySQL database..."
+    mysqld --initialize-insecure --user=mysql --datadir=/var/lib/mysql
+fi
+
+echo "=> Starting MySQL service..."
 echo "Executing: mysqld --basedir=/usr --datadir=/var/lib/mysql --plugin-dir=/usr/lib/mysql/plugin --log-error=/var/log/mysql/error.log --open-files-limit=65535 --pid-file=/var/run/mysqld/mysqld.pid --socket=/var/run/mysqld/mysqld.sock --port=3306"
+
+# 启动MySQL服务
 service mysql start
+
+# 等待MySQL服务启动
+echo "=> Waiting for MySQL to start..."
+for i in {30..0}; do
+    if mysql -e 'SELECT 1' &> /dev/null; then
+        break
+    fi
+    echo "=> MySQL is starting... ($i seconds remaining)"
+    sleep 1
+done
+
+if [ "$i" = 0 ]; then
+    echo "=> MySQL failed to start"
+    exit 1
+fi
+
+echo "=> MySQL started successfully"
 
 # Create users on master and slave if they do not exist
 /bin/bash /tmp/create_mysql_admin_user.sh || exit 1
