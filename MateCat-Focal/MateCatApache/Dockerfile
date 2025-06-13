@@ -39,7 +39,15 @@ RUN apt-get -y install php php-xdebug php-json php-xml php-curl php-mysql php-mb
 
 RUN apt-get -y install mysql-client libzip-dev certbot python3-certbot-apache redis-tools
 
-RUN apt-get -y install nodejs npm
+# 直接下载Node.js二进制包安装，避免使用apt安装npm
+RUN mkdir -p /opt/nodejs && \
+    cd /opt/nodejs && \
+    wget https://npmmirror.com/mirrors/node/v16.20.2/node-v16.20.2-linux-x64.tar.gz && \
+    tar -zxf node-v16.20.2-linux-x64.tar.gz && \
+    ln -s /opt/nodejs/node-v16.20.2-linux-x64/bin/node /usr/local/bin/node && \
+    ln -s /opt/nodejs/node-v16.20.2-linux-x64/bin/npm /usr/local/bin/npm && \
+    ln -s /opt/nodejs/node-v16.20.2-linux-x64/bin/npx /usr/local/bin/npx && \
+    node -v && npm -v
 
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 
