@@ -18,9 +18,19 @@ PASS=${MYSQL_PASS}
 _word=$( [ "${MYSQL_PASS}" ] && echo "preset" || echo "random" )
 echo "=> Creating MySQL admin user with ${_word} password"
 
-mysql -e "CREATE USER 'admin'@'%' IDENTIFIED BY '$PASS'"
+# 创建admin用户，如果已存在则跳过
+mysql -e "CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY '$PASS'"
 mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' WITH GRANT OPTION"
+
+# 创建matecat用户，ProxySQL配置中需要
+mysql -e "CREATE USER IF NOT EXISTS 'matecat'@'%' IDENTIFIED BY 'matecat01'"
+mysql -e "GRANT ALL PRIVILEGES ON *.* TO 'matecat'@'%' WITH GRANT OPTION"
+
 mysql -e "FLUSH PRIVILEGES"
+
+# 验证用户创建
+echo "=> Verifying users created:"
+mysql -e "SELECT User, Host FROM mysql.user WHERE User IN ('admin', 'matecat')"
 
 
 echo "=> Done!"
